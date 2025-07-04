@@ -21,4 +21,12 @@
       </plugin>
     </plugins>
   </build>
+  <distributionManagement>
+         <repository>
+             <id>codeartifact</id>
+             <name>codeartifact</name>
+             <url>https://test-121263836368.d.codeartifact.eu-central-1.amazonaws.com/maven/test_codeartifact/</url>
+         </repository>
+  </distributionManagement>
+       
 </project>
