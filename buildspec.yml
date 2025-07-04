@@ -8,7 +8,7 @@ env:
 phases:
   install:
     runtime-versions:
-      java: corretto11
+      java: corretto17
     commands:
       - echo "Getting CodeArtifact authorization token..."
       - export MAVEN_REPO_URL=$(aws codeartifact get-repository-endpoint --domain $DOMAIN_NAME --domain-owner $DOMAIN_OWNER --repository $REPO_NAME --format maven --region $REGION --query repositoryEndpoint --output text)
