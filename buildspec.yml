@@ -11,6 +11,7 @@ phases:
       java: corretto17
     commands:
       - echo "Getting CodeArtifact authorization token..."
+      - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain test --domain-owner 121263836368 --region eu-central-1 --query authorizationToken --output text`
       - export MAVEN_REPO_URL=$(aws codeartifact get-repository-endpoint --domain $DOMAIN_NAME --domain-owner $DOMAIN_OWNER --repository $REPO_NAME --format maven --region $REGION --query repositoryEndpoint --output text)
       - echo "Fetching CodeArtifact repository endpoint..."
       - export MAVEN_REPO_URL=$(aws codeartifact get-repository-endpoint --domain $DOMAIN_NAME --domain-owner $DOMAIN_OWNER --repository $REPO_NAME --format maven --region $REGION --query repositoryEndpoint --output text)
