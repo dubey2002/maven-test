@@ -28,5 +28,12 @@
              <url>https://test-121263836368.d.codeartifact.eu-central-1.amazonaws.com/maven/test_codeartifact/</url>
          </repository>
   </distributionManagement>
+   <dependencies>
+       <dependency>
+         <groupId>com.example</groupId>
+         <artifactId>demo</artifactId>
+         <version>1.0.0</version>
+       </dependency>
+   </dependencies>
        
 </project>
