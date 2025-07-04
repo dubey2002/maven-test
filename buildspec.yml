@@ -49,6 +49,6 @@ phases:
     commands:
       - echo "Running Maven build..."
       - cat ~/.m2/settings.xml
-      - mvn deploy
+      - mvn clean install
          
   
