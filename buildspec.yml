@@ -47,6 +47,6 @@ phases:
   build:
     commands:
       - echo "Running Maven build..."
-      - mvn clean install  
+      - mvn deploy
          
   
