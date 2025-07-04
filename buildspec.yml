@@ -10,8 +10,8 @@ phases:
     runtime-versions:
       java: corretto11
     commands:
-echo "Getting CodeArtifact authorization token..."
-export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
+            echo "Getting CodeArtifact authorization token..."
+            export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
           --domain $DOMAIN_NAME \
           --domain-owner $DOMAIN_OWNER \
           --region $REGION \
