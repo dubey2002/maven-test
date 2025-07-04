@@ -45,7 +45,7 @@ phases:
             </activeProfiles>
                 <mirrors>
                   <mirror>
-                    <id>central-mirror</id>
+                    <id>codeartifact</id>
                     <name>CodeArtifact Maven Central mirror</name>
                     <url>https://test-121263836368.d.codeartifact.eu-central-1.amazonaws.com/maven/test_codeartifact/</url>
                     <mirrorOf>central</mirrorOf>
