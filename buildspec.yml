@@ -1,49 +1,59 @@
 version: 0.2
-
 env:
   variables:
-    DOMAIN_NAME: my-domain
-    DOMAIN_OWNER: "123456789012"
-    REPO_NAME: my-repo
-
+    DOMAIN_NAME: test
+    DOMAIN_OWNER: 121263836368
+    REPO_NAME: test_codeartifact
+    REGION: eu-central-1  # change this if your CodeArtifact is in another region
 phases:
   install:
     runtime-versions:
-      java: corretto17
+      java: corretto11
     commands:
-      - echo Logging in to CodeArtifact...
-      - export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain $DOMAIN_NAME --domain-owner $DOMAIN_OWNER --query authorizationToken --output text)
-      - export MAVEN_REPO_URL=$(aws codeartifact get-repository-endpoint --domain $DOMAIN_NAME --domain-owner $DOMAIN_OWNER --repository $REPO_NAME --format maven --query repositoryEndpoint --output text)
-
-  pre_build:
-    commands:
-      - echo Creating Maven settings.xml...
-      - |
-        cat > settings.xml <<XML
-        <settings>
-          <servers>
-            <server>
+echo "Getting CodeArtifact authorization token..."
+export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
+          --domain $DOMAIN_NAME \
+          --domain-owner $DOMAIN_OWNER \
+          --region $REGION \
+          --query authorizationToken \
+          --output text)
+echo "Fetching CodeArtifact repository endpoint..."
+export MAVEN_REPO_URL=$(aws codeartifact get-repository-endpoint \
+          --domain $DOMAIN_NAME \
+          --domain-owner $DOMAIN_OWNER \
+          --repository $REPO_NAME \
+          --format maven \
+          --region $REGION \
+          --query repositoryEndpoint \
+          --output text)
+echo "Injecting settings.xml into ~/.m2 directory..."
+mkdir -p ~/.m2
+|
+        cat > ~/.m2/settings.xml <<EOF
+        <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd"> <servers> <server>
               <id>codeartifact</id>
               <username>aws</username>
-              <password>$CODEARTIFACT_AUTH_TOKEN</password>
+              <password>${CODEARTIFACT_AUTH_TOKEN}</password>
             </server>
           </servers>
-          <mirrors>
-            <mirror>
+          <profiles>
+            <profile>
               <id>codeartifact</id>
-              <name>CodeArtifact Maven Repo</name>
-              <url>$MAVEN_REPO_URL</url>
-              <mirrorOf>*</mirrorOf>
-            </mirror>
-          </mirrors>
+              <repositories>
+                <repository>
+                  <id>codeartifact</id>
+                  <url>${MAVEN_REPO_URL}</url>
+                </repository>
+              </repositories>
+            </profile>
+          </profiles>
+          <activeProfiles>
+            <activeProfile>codeartifact</activeProfile>
+          </activeProfiles>
         </settings>
-        XML
-
+        EOF
   build:
     commands:
-      - echo Running Maven Build...
-      - mvn clean install --settings settings.xml
-
-artifacts:
-  files:
-    - target/*.jar
+echo "Running Maven build..."
+mvn clean install
