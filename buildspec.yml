@@ -1,0 +1,49 @@
+version: 0.2
+
+env:
+  variables:
+    DOMAIN_NAME: my-domain
+    DOMAIN_OWNER: "123456789012"
+    REPO_NAME: my-repo
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+    commands:
+      - echo Logging in to CodeArtifact...
+      - export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain $DOMAIN_NAME --domain-owner $DOMAIN_OWNER --query authorizationToken --output text)
+      - export MAVEN_REPO_URL=$(aws codeartifact get-repository-endpoint --domain $DOMAIN_NAME --domain-owner $DOMAIN_OWNER --repository $REPO_NAME --format maven --query repositoryEndpoint --output text)
+
+  pre_build:
+    commands:
+      - echo Creating Maven settings.xml...
+      - |
+        cat > settings.xml <<XML
+        <settings>
+          <servers>
+            <server>
+              <id>codeartifact</id>
+              <username>aws</username>
+              <password>$CODEARTIFACT_AUTH_TOKEN</password>
+            </server>
+          </servers>
+          <mirrors>
+            <mirror>
+              <id>codeartifact</id>
+              <name>CodeArtifact Maven Repo</name>
+              <url>$MAVEN_REPO_URL</url>
+              <mirrorOf>*</mirrorOf>
+            </mirror>
+          </mirrors>
+        </settings>
+        XML
+
+  build:
+    commands:
+      - echo Running Maven Build...
+      - mvn clean install --settings settings.xml
+
+artifacts:
+  files:
+    - target/*.jar
