@@ -28,6 +28,23 @@
              <url>https://test-121263836368.d.codeartifact.eu-central-1.amazonaws.com/maven/test_codeartifact/</url>
          </repository>
   </distributionManagement>
+           <profiles>
+             <profile>
+               <pluginRepositories>
+                 <pluginRepository>
+                   <id>codeartifact</id>
+                   <name>CodeArtifact Plugins</name>
+                   <url>https://test-121263836368.d.codeartifact.eu-central-1.amazonaws.com/maven/test_codeartifact/</url>
+                   <releases>
+                     <enabled>true</enabled>
+                   </releases>
+                   <snapshots>
+                     <enabled>true</enabled>
+                   </snapshots>
+                 </pluginRepository>
+               </pluginRepositories>
+             </profile>
+           </profiles>
    
        
 </project>
