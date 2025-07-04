@@ -10,15 +10,15 @@ phases:
     runtime-versions:
       java: corretto11
     commands:
-            echo "Getting CodeArtifact authorization token..."
-            export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
+      - echo "Getting CodeArtifact authorization token..."
+      - export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
           --domain $DOMAIN_NAME \
           --domain-owner $DOMAIN_OWNER \
           --region $REGION \
           --query authorizationToken \
           --output text)
-echo "Fetching CodeArtifact repository endpoint..."
-export MAVEN_REPO_URL=$(aws codeartifact get-repository-endpoint \
+      - echo "Fetching CodeArtifact repository endpoint..."
+      - export MAVEN_REPO_URL=$(aws codeartifact get-repository-endpoint \
           --domain $DOMAIN_NAME \
           --domain-owner $DOMAIN_OWNER \
           --repository $REPO_NAME \
@@ -26,34 +26,39 @@ export MAVEN_REPO_URL=$(aws codeartifact get-repository-endpoint \
           --region $REGION \
           --query repositoryEndpoint \
           --output text)
-echo "Injecting settings.xml into ~/.m2 directory..."
-mkdir -p ~/.m2
-|
-        cat > ~/.m2/settings.xml <<EOF
-        <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd"> <servers> <server>
-              <id>codeartifact</id>
-              <username>aws</username>
-              <password>${CODEARTIFACT_AUTH_TOKEN}</password>
-            </server>
-          </servers>
-          <profiles>
-            <profile>
-              <id>codeartifact</id>
-              <repositories>
-                <repository>
-                  <id>codeartifact</id>
-                  <url>${MAVEN_REPO_URL}</url>
-                </repository>
-              </repositories>
-            </profile>
-          </profiles>
-          <activeProfiles>
-            <activeProfile>codeartifact</activeProfile>
-          </activeProfiles>
-        </settings>
-        EOF
+      - echo "Injecting settings.xml into ~/.m2 directory..."
+      - mkdir -p ~/.m2
+      - |
+          cat > ~/.m2/settings.xml <<EOF
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+            <servers>
+              <server>
+                <id>codeartifact</id>
+                <username>aws</username>
+                <password>${CODEARTIFACT_AUTH_TOKEN}</password>
+              </server>
+            </servers>
+            <profiles>
+              <profile>
+                <id>codeartifact</id>
+                <repositories>
+                  <repository>
+                    <id>codeartifact</id>
+                    <url>${MAVEN_REPO_URL}</url>
+                  </repository>
+                </repositories>
+              </profile>
+            </profiles>
+            <activeProfiles>
+              <activeProfile>codeartifact</activeProfile>
+            </activeProfiles>
+          </settings>
+          EOF
   build:
     commands:
-echo "Running Maven build..."
-mvn clean install
+      - echo "Running Maven build..."
+      - mvn clean install  
+         
+  
